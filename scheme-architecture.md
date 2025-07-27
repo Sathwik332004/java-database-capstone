@@ -34,13 +34,3 @@ The Smart Clinic Management System is built using a three-tier architecture that
 
 ---
 
-## Diagram (Optional - For PDF/PPT)
-
-You can add a visual diagram here in your GitHub README or PDF submission that shows:
-
-- Browser ↔ Frontend (HTML/CSS/JS)
-- ↕ REST API calls
-- Spring Boot Controllers → Services → Repositories
-- Repositories → MySQL or MongoDB
-
----

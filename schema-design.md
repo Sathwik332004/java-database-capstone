@@ -1,6 +1,6 @@
 ## MySQL Database Design
 
-This Section defines the MongoDB schema for storing **prescriptions**, which complements the MySQL relational schema used for appointments, doctors, and patients. Since prescriptions often involve unstructured and evolving data like medications, notes, and dosage schedules, MongoDB is a natural fit.
+This section defines the MySQL database schema for the Smart Clinic Management System. It includes tables for patients, doctors, appointments, admins, payments, and optional clinic locations. Each table follows a clear structure and is explained with design decisions and constraints.
 
 ---
 

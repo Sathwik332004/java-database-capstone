@@ -1,7 +1,5 @@
 ## MySQL Database Design
 
-This file defines the MySQL database schema for the Smart Clinic Management System, including tables for patients, doctors, appointments, admins, and optional expansions. Each table includes field descriptions, data types, keys, and design justifications.
-
 ---
 
 ### Table: patients

@@ -1,6 +1,7 @@
 ## MySQL Database Design
 
 This Section defines the MongoDB schema for storing **prescriptions**, which complements the MySQL relational schema used for appointments, doctors, and patients. Since prescriptions often involve unstructured and evolving data like medications, notes, and dosage schedules, MongoDB is a natural fit.
+
 ---
 
 ### Table: patients

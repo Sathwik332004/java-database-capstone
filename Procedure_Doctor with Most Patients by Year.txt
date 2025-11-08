@@ -1,0 +1,50 @@
+Enter password: ************
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 97
+Server version: 8.0.42 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2025, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> use cms
+Database changed
+mysql>
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE PROCEDURE GetDoctorWithMostPatientsByYear(
+    ->     IN input_year INT
+    -> )
+    -> BEGIN
+    ->     SELECT
+    ->         doctor_id,
+    ->         COUNT(patient_id) AS patients_seen
+    ->     FROM
+    ->         appointments
+    ->     WHERE
+    ->         YEAR(appointment_time) = input_year
+    ->     GROUP BY
+    ->         doctor_id
+    ->     ORDER BY
+    ->         patients_seen DESC
+    ->     LIMIT 1;
+    -> END $$
+Query OK, 0 rows affected (0.02 sec)
+
+mysql>
+mysql> CALL GetDoctorWithMostPatientsByYear(2025);
+    -> $$
++-----------+---------------+
+| doctor_id | patients_seen |
++-----------+---------------+
+|         1 |            34 |
++-----------+---------------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>

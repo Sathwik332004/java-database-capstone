@@ -63,3 +63,48 @@
 
 Let me know if you'd like a consolidated style guide for the entire HospitalCRM frontend.
  */
+
+ /* doctorDashboard.css - handcrafted styles for Doctor dashboard */
+
+/* Reset & base */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; font-family: Inter, Arial, Helvetica, sans-serif; background: #f6f8fb; color: #0e1724; }
+
+/* container/wrapper share with admin styles (kept consistent) */
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+.wrapper { display:flex; flex-direction:column; min-height:100vh; gap:18px; }
+
+/* header area handled by layout */
+
+/* main card */
+.main-content { padding: 18px; border-radius: 12px; background: #fff; box-shadow: 0 10px 30px rgba(10,10,20,0.05); border: 1px solid #e9eef4; }
+
+/* controls */
+.controls { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.search-input { padding:10px 12px; border-radius:10px; border:1px solid #e6eaef; width:280px; background:#fff; outline:none; }
+.search-input:focus { box-shadow:0 6px 18px rgba(3,110,110,0.06); border-color:#cfe0ff; }
+.select-filter, .btn { padding:10px 12px; border-radius:10px; border:1px solid #e6eaef; background:#fff; cursor:pointer; font-weight:700; }
+.btn.primary { background: linear-gradient(180deg,#0b5fff,#0b7fff); color:#fff; border:none; }
+#todayBtn { background:#015c5d; color:#fff; border:none; padding:10px 12px; border-radius:10px; }
+#todayBtn:hover { background:#017d7e; }
+
+/* table */
+.table-wrap { overflow:auto; }
+.sc-table { width:100%; border-collapse:collapse; background:transparent; min-width:800px; }
+.sc-table thead th { background: rgba(4,18,38,0.03); color:#081232; text-align:left; padding:12px; font-weight:700; font-size:0.95rem; border-bottom:1px solid #f0f3f6; }
+.sc-table tbody td { padding:12px; border-bottom:1px solid #f5f7fa; color:#3b4650; vertical-align:middle; }
+.sc-table tbody tr:hover { background:#fbfdff; transform:translateZ(0); }
+
+/* no records */
+.noPatientRecord td { font-style:italic; color:#7a8086; text-align:center; padding:24px; }
+
+/* prescription button */
+.prescription-btn { padding:8px 10px; border-radius:8px; border:1px solid #dfe8ff; background:#fff; color:#0b5fff; font-weight:700; cursor:pointer; transition: transform .12s ease, filter .12s ease; }
+.prescription-btn:hover { transform:scale(1.03); filter:brightness(1.03); }
+
+/* responsive */
+@media (max-width:900px) {
+  .search-input { width:100%; }
+  .controls { flex-direction:column; align-items:stretch; }
+  .sc-table { min-width:unset; font-size:0.95rem; }
+}

@@ -107,3 +107,121 @@ with search, filter, and modal functionality.
 
  -->
 
+ <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard — Smart Clinic</title>
+
+  <!-- page-specific + global CSS -->
+  <link rel="stylesheet" th:href="@{/assets/css/adminDashboard.css}">
+  <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+
+  <div class="container">
+    <div class="wrapper">
+
+      <!-- header injected by header.js -->
+      <div id="header"></div>
+
+      <!-- MAIN CONTENT -->
+      <main class="main-content">
+
+        <section class="panel sc-card admin-panel">
+
+          <!-- controls -->
+          <div class="panel-header">
+            <h1 class="page-title">Doctors Management</h1>
+
+            <div class="controls">
+              <input id="searchBar" type="text" placeholder="Search by doctor name" class="search-input" />
+
+              <select id="specialtyFilter" class="select-filter">
+                <option value="">All Specialties</option>
+              </select>
+
+              <select id="timeSort" class="select-filter">
+                <option value="upcoming">Sort: Upcoming</option>
+                <option value="recent">Sort: Recently Added</option>
+              </select>
+
+              <!-- Add Doctor button — header.js also creates an Add Doctor button, but keep a local control -->
+              <button id="openAddDoctor" class="btn primary">Add Doctor</button>
+            </div>
+          </div>
+
+          <!-- dynamic list area -->
+          <div id="content" class="content-grid" aria-live="polite">
+            <!-- doctor cards are injected here by adminDashboard.js -->
+            <div class="empty-state" id="emptyState">Loading doctors…</div>
+          </div>
+
+        </section>
+      </main>
+
+      <!-- footer injected by footer.js -->
+      <div id="footer"></div>
+
+    </div>
+  </div>
+
+  <!-- ADD DOCTOR MODAL (hidden by default) -->
+  <div id="modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="modalTitle">
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal-card" role="document">
+      <button id="closeModal" class="close" aria-label="Close modal">&times;</button>
+
+      <div class="modal-body">
+        <h3 id="modalTitle">Add New Doctor</h3>
+
+        <form id="addDoctorForm" class="sc-form" onsubmit="return false;">
+          <div class="sc-field">
+            <label class="sc-label" for="docFullName">Full name</label>
+            <input id="docFullName" class="sc-input" name="fullName" required minlength="3" maxlength="100" />
+          </div>
+
+          <div class="sc-field">
+            <label class="sc-label" for="docEmail">Email</label>
+            <input id="docEmail" class="sc-input" name="email" type="email" required />
+          </div>
+
+          <div class="sc-field">
+            <label class="sc-label" for="docPhone">Phone</label>
+            <input id="docPhone" class="sc-input" name="phone" pattern="\\d{10}" placeholder="10 digits" required />
+          </div>
+
+          <div class="sc-field">
+            <label class="sc-label" for="docSpecialty">Specialty</label>
+            <input id="docSpecialty" class="sc-input" name="specialty" required minlength="3" maxlength="50" />
+          </div>
+
+          <div class="sc-field">
+            <label class="sc-label" for="docExperience">Experience (years)</label>
+            <input id="docExperience" class="sc-input" name="experienceYears" type="number" min="0" value="0" />
+          </div>
+
+          <div class="sc-actions modal-actions">
+            <button type="button" id="submitAddDoctor" class="sc-btn">Add Doctor</button>
+            <button type="button" id="cancelAddDoctor" class="sc-btn secondary">Cancel</button>
+          </div>
+
+          <div id="addDoctorFeedback" class="sc-help" aria-live="polite"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- scripts (deferred) -->
+  <script th:src="@{/js/util.js}" defer></script>
+  <script th:src="@{/js/components/header.js}" defer></script>
+  <script th:src="@{/js/components/footer.js}" defer></script>
+
+  <!-- modules (ES modules) -->
+  <script type="module" th:src="@{/js/components/doctorCard.js}" defer></script>
+  <script type="module" th:src="@{/js/services/adminDashboard.js}" defer></script>
+</body>
+</html>
+
+

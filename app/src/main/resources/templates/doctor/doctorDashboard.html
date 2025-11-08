@@ -99,3 +99,79 @@ This file defines the Doctor Dashboard interface, allowing doctors to view and m
 
     * Properly close the `<body>` and `<html>` tags to complete the document.
  -->
+
+ <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Doctor Dashboard — Smart Clinic</title>
+  <link rel="icon" href="/assets/images/favicon.ico" />
+
+  <!-- styles -->
+  <link rel="stylesheet" th:href="@{/assets/css/adminDashboard.css}" />
+  <link rel="stylesheet" th:href="@{/assets/css/doctorDashboard.css}" />
+  <link rel="stylesheet" th:href="@{/assets/css/style.css}" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+  <div class="container">
+    <div class="wrapper">
+
+      <!-- header injected by header.js -->
+      <div id="header"></div>
+
+      <main class="main-content sc-card">
+
+        <div class="panel-header" style="align-items:flex-start;gap:18px;flex-wrap:wrap;">
+          <div>
+            <h1 class="page-title">Patients & Appointments</h1>
+            <p class="sc-help">Manage patients, view today's appointments, and add prescriptions.</p>
+          </div>
+
+          <div class="controls" style="margin-left:auto;">
+            <input id="searchBar" class="search-input" type="text" placeholder="Search patient by name or phone" />
+            <button id="todayBtn" class="btn">Today's Appointments</button>
+            <input id="datePicker" type="date" class="select-filter" />
+            <button id="addPrescriptionBtn" class="btn primary">Add Prescription</button>
+          </div>
+        </div>
+
+        <section class="sc-card" style="margin-top:12px;">
+          <div class="table-wrap">
+            <table id="patientTable" class="sc-table" aria-live="polite">
+              <thead>
+                <tr>
+                  <th>Patient ID</th>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Email</th>
+                  <th>Next Appointment</th>
+                  <th>Prescription</th>
+                </tr>
+              </thead>
+              <tbody id="patientTableBody">
+                <tr class="noPatientRecord"><td colspan="6">Loading patients…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- footer injected by footer.js -->
+      <div id="footer"></div>
+
+    </div>
+  </div>
+
+  <!-- scripts -->
+  <script th:src="@{/js/util.js}" defer></script>
+  <script th:src="@{/js/components/header.js}" defer></script>
+  <script th:src="@{/js/components/footer.js}" defer></script>
+
+  <script type="module" th:src="@{/js/components/patientRows.js}" defer></script>
+  <script type="module" th:src="@{/js/services/doctorDashboard.js}" defer></script>
+</body>
+</html>
+

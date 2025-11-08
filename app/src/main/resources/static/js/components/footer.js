@@ -102,3 +102,66 @@
   Call the renderFooter function to populate the footer in the page
 
 */
+
+// footer.js
+// This script dynamically renders a consistent footer across all pages.
+// It contains branding, navigation links, and legal information.
+// The footer is static and does not depend on user role.
+
+function renderFooter() {
+  const footer = document.getElementById("footer");
+  if (!footer) return; // safety check in case #footer is missing
+
+  footer.innerHTML = `
+    <footer class="footer">
+      <div class="footer-container">
+
+        <!-- Branding Section -->
+        <div class="footer-logo">
+          <img src="../assets/images/logo/logo.png" alt="Hospital CMS Logo" class="footer-logo-img" />
+          <p>© Copyright 2025. All Rights Reserved by <strong>Hospital CMS</strong>.</p>
+        </div>
+
+        <!-- Footer Links Section -->
+        <div class="footer-links">
+          
+          <!-- Company Links -->
+          <div class="footer-column">
+            <h4>Company</h4>
+            <a href="#">About</a>
+            <a href="#">Careers</a>
+            <a href="#">Press</a>
+          </div>
+
+          <!-- Support Links -->
+          <div class="footer-column">
+            <h4>Support</h4>
+            <a href="#">Account</a>
+            <a href="#">Help Center</a>
+            <a href="#">Contact Us</a>
+          </div>
+
+          <!-- Legals Links -->
+          <div class="footer-column">
+            <h4>Legals</h4>
+            <a href="#">Terms & Conditions</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Licensing</a>
+          </div>
+
+        </div> <!-- End footer-links -->
+      </div> <!-- End footer-container -->
+    </footer>
+  `;
+}
+
+// Automatically render the footer when the script loads
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", renderFooter);
+} else {
+  renderFooter();
+}
+
+// Export (optional) if other scripts want to manually call it
+window.renderFooter = renderFooter;
+

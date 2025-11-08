@@ -1,63 +1,83 @@
-<!-- patientDashboard.html -->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <link rel="icon" type="image/svg+xml" href="../assets/images/logo/logo.png" />
-    <title>PatientDashboard</title>
-    <link rel="stylesheet" href="../assets/css/adminDashboard.css">
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="../assets/css/patientDashboard.css">
-    <script src="../js/render.js" defer></script>
-    <script src="../js/util.js" defer></script>
-    <script src="../js/components/header.js" defer></script>
-    <script src="../js/components/footer.js" defer></script>
-    <script type="module" src="../js/components/modals.js"></script>
+  <meta charset="utf-8" />
+  <title>Patient Dashboard — Smart Clinic</title>
+  <link rel="icon" href="../assets/images/favicon.ico" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="../assets/css/adminDashboard.css" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="stylesheet" href="../assets/css/patientDashboard.css" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
 </head>
-
 <body onload="renderContent()">
-    <div class="container">
-        <div class="wrapper">
-            <div id="header"></div>
-            <main class="main-content">
-                <input type="text" id="searchBar" class="searchBar" placeholder="Search Bar for custom output" />
-                <div class="filter-wrapper">
-                    <select class="filter-select" id="filterTime">
-                        <option value="">Sort by Time</option>
-                        <option value="AM">AM</option>
-                        <option value="PM">PM</option>
-                    </select>
-                    <select class="filter-select" id="filterSpecialty">
-                        <option value="">Filter by Specialty</option>
-                        <option value="Cardiologist">Cardiologist</option>
-                        <option value="Dermatologist">Dermatologist</option>
-                        <option value="Neurologist">Neurologist</option>
-                        <option value="Pediatrician">Pediatrician</option>
-                        <option value="Orthopedic">Orthopedic</option>
-                        <option value="Gynecologist">Gynecologist</option>
-                        <option value="Psychiatrist">Psychiatrist</option>
-                        <option value="Dentist">Dentist</option>
-                        <option value="Ophthalmologist">Ophthalmologist</option>
-                        <option value="Ent">ENT Specialist</option>
-                        <option value="Urologist">Urologist</option>
-                        <option value="Oncologist">Oncologist</option>
-                        <option value="Gastroenterologist">Gastroenterologist</option>
-                        <option value="General">General Physician</option>
-                    </select>
-                </div>
-                <div id="content"></div>
-            </main>
-            <div id="footer"></div>
-        </div>
-    </div>
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <span class="close" id="closeModal">&times;</span>
-            <div id="modal-body"></div>
-        </div>
-    </div>
-    <script type="module" src="../js/patientDashboard.js" defer></script>
-</body>
 
+  <div class="container">
+    <div class="wrapper">
+
+      <!-- header injected by js -->
+      <div id="header"></div>
+
+      <main class="main-content">
+
+        <div class="panel-header" style="align-items:center;gap:16px;flex-wrap:wrap;">
+          <div>
+            <h1 class="page-title">Find a Doctor</h1>
+            <p class="sc-help">Search doctors and book appointments quickly.</p>
+          </div>
+
+          <div class="controls" style="margin-left:auto;">
+            <input id="searchBar" class="searchBar" type="text" placeholder="Search doctors by name, specialty or location" />
+            <div class="filter-wrapper">
+              <select class="filter-select" id="filterTime">
+                <option value="">Any time</option>
+                <option value="AM">Morning (AM)</option>
+                <option value="PM">Afternoon/Evening (PM)</option>
+              </select>
+
+              <select class="filter-select" id="filterSpecialty">
+                <option value="">All Specialties</option>
+                <!-- specialties populated dynamically -->
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- content grid -->
+        <section class="sc-card" style="margin-top:12px;">
+          <div id="content" class="content-grid">
+            <div class="empty-state">Loading doctors…</div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- footer injected by js -->
+      <div id="footer"></div>
+
+    </div>
+  </div>
+
+  <!-- generic modal markup (some components will use this region) -->
+  <div id="modal" class="modal" aria-hidden="true">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- booking modal (bottom pop-up) is controlled by modals.js (inserts itself into DOM) -->
+
+  <!-- JS utilities + components -->
+  <script src="../js/render.js" defer></script>
+  <script src="../js/util.js" defer></script>
+  <script src="../js/components/header.js" defer></script>
+  <script src="../js/components/footer.js" defer></script>
+
+  <!-- booking modal component and page logic -->
+  <script type="module" src="../js/components/modals.js" defer></script>
+  <script type="module" src="../js/patientDashboard.js" defer></script>
+</body>
 </html>

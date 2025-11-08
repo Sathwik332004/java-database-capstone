@@ -92,3 +92,60 @@ Admin Button (`.adminBtn`)
 
 
 */
+
+/* adminDashboard.css - handcrafted styles (no frameworks) */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; font-family: Inter, Arial, Helvetica, sans-serif; background: #f6f8fb; color: #0e1724; }
+
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+.wrapper { display: flex; flex-direction: column; min-height: 100vh; gap: 18px; }
+
+/* card/panel */
+.sc-card { background: #fff; border-radius: 12px; padding: 18px; border: 1px solid #e7ebf0; box-shadow: 0 8px 22px rgba(7,10,20,0.06); }
+.admin-panel { width: 100%; }
+
+/* header */
+.panel-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
+.page-title { font-size:1.25rem; font-weight:700; color:#071232; }
+
+/* controls */
+.controls { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.search-input { padding:10px 12px; border-radius:10px; border:1px solid #e6eaef; width:240px; background:#fff; outline:none; }
+.search-input:focus { box-shadow:0 6px 18px rgba(11,95,255,0.08); border-color:#cfe0ff; }
+
+.select-filter { padding:10px 12px; border-radius:10px; border:1px solid #e6eaef; background:#fff; outline:none; min-width:160px; }
+.btn { padding:10px 14px; border-radius:10px; border:none; cursor:pointer; font-weight:700; }
+.btn.primary { background: linear-gradient(180deg,#0b5fff,#0b7fff); color:#fff; }
+
+/* content grid */
+.content-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:14px; margin-top:6px; }
+.empty-state { padding:28px; color:#5b6570; text-align:center; }
+
+/* doctor card base (doctorCard.js will add sc-card class) */
+.doctor-card { display:flex; flex-direction:column; gap:8px; padding:14px; border-radius:10px; border:1px solid #eef2f8; background:#fff; min-height:140px; }
+.doctor-top { display:flex; gap:12px; align-items:center; }
+.doctor-avatar { width:56px; height:56px; border-radius:8px; background:#eef7ff; display:flex; align-items:center; justify-content:center; font-weight:700; color:#08327b; font-size:1.05rem; }
+.doctor-info { flex:1; }
+.doctor-name { font-weight:700; color:#081232; }
+.doctor-meta { color:#6b7178; font-size:0.95rem; margin-top:4px; }
+.doctor-actions { display:flex; gap:8px; margin-top:auto; }
+.action-btn { padding:8px 10px; border-radius:8px; border:1px solid #dbe7ff; background:#fff; cursor:pointer; font-weight:700; color:#0b5fff; }
+.action-btn.danger { border-color:#ffd6d6; color:#c02121; }
+
+/* modal styles reuse from global but add small tweaks */
+.modal { position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:220; }
+.modal[aria-hidden="false"] { display:flex; }
+.modal-backdrop { position:absolute; inset:0; background:rgba(10,12,20,0.45); }
+.modal-card { position:relative; width:95%; max-width:560px; border-radius:12px; padding:18px; background:#fff; z-index:230; box-shadow:0 18px 36px rgba(8,10,20,0.18); border:1px solid #e6ecf6; }
+.close { position:absolute; right:12px; top:10px; background:transparent; border:none; font-size:22px; color:#6b7178; cursor:pointer; }
+
+.modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
+.sc-help { margin-top:8px; color:#6b6f76 }
+
+/* responsive */
+@media (max-width: 760px) {
+  .controls { flex-direction:column; align-items:stretch; }
+  .search-input, .select-filter { width:100%; }
+  .content-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+}

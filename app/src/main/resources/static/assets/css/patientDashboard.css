@@ -77,4 +77,126 @@
     filter: brightness(1.2);
     background-color: #1c3745;
   }
+
+  /* patientDashboard.css - styles for patient dashboard, cards, ripple, and booking modal */
+
+/* base resets (some already in global, but safe to include) */
+* { box-sizing: border-box; }
+html,body { height:100%; font-family: Inter, Arial, Helvetica, sans-serif; background: #f6f8fb; color: #0e1724; }
+
+/* content grid */
+.content-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:16px; padding:12px; }
+
+/* doctor card */
+.doctor-card {
+  background: #fff;
+  border-radius: 12px;
+  padding:14px;
+  border:1px solid #e7ebf0;
+  box-shadow: 0 10px 24px rgba(8,10,20,0.04);
+  display:flex;
+  flex-direction:column;
+  min-height:160px;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.doctor-card:hover { transform: translateY(-6px); box-shadow: 0 18px 40px rgba(8,10,20,0.08); }
+
+.card-top { display:flex; gap:12px; align-items:center; }
+.doctor-avatar { width:60px; height:60px; border-radius:10px; background:#eef7ff; display:flex;align-items:center;justify-content:center;font-weight:800;color:#08327b;font-size:1.05rem; }
+.doctor-info { flex:1; }
+.doc-name { font-weight:800; color:#081232; font-size:1.05rem; }
+.doc-spec { color:#556070; margin-top:6px; font-size:0.95rem; }
+
+.doc-meta { margin-top:10px; color:#6b7178; font-size:0.95rem; }
+
+/* times chips */
+.time-chip { display:inline-block; padding:6px 8px; border-radius:8px; border:1px solid #e7f0ff; color:#0b5fff; font-weight:700; margin-right:8px; margin-top:8px; background: #fff; font-size:0.92rem; }
+
+/* actions area (dark background center) */
+.card-actions { display:flex; gap:10px; align-items:center; justify-content:space-between; margin-top:12px; padding:10px; border-radius:10px; background: linear-gradient(180deg,#f4f6fb,#f7f9ff); }
+.card-actions .left { display:flex; gap:8px; align-items:center; }
+.card-actions .right { display:flex; gap:8px; align-items:center; }
+
+/* book button style */
+.book-btn {
+  background:#09204d; color:#fff; padding:10px 14px; border-radius:10px; border:none; font-weight:800; cursor:pointer;
+  transition: filter .12s ease, transform .12s ease;
+}
+.book-btn:hover { filter:brightness(1.08); transform: translateY(-2px); }
+
+/* small secondary button */
+.secondary-btn { background:#fff; color:#0b5fff; border:1px solid #dfe8ff; padding:8px 10px; border-radius:8px; font-weight:700; cursor:pointer; }
+
+/* empty state */
+.empty-state { text-align:center; color:#6b7178; padding:28px; font-style:italic; }
+
+/* ripple effect */
+.ripple {
+  position: fixed;
+  pointer-events: none;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background: rgba(9,32,77,0.12);
+  animation: ripple-anim .6s ease-out forwards;
+  z-index: 10000;
+}
+@keyframes ripple-anim {
+  to { transform: translate(-50%,-50%) scale(6); opacity:0; }
+}
+
+/* bottom booking modal (modalApp) */
+.modalApp {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: -100%;
+  z-index: 12000;
+  background: #ffffff;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 -10px 40px rgba(10,10,20,0.12);
+  transition: transform .32s cubic-bezier(.2,.9,.28,1), bottom .32s;
+  transform: translateY(100%);
+}
+.modalApp.active { transform: translateY(0); bottom: 0; }
+
+/* modal header bar */
+.modalApp .handle { width:56px; height:6px; background:#e6eaef; border-radius:6px; margin:6px auto 12px; }
+
+/* form inside modal */
+.modalApp .modal-body { display:flex; flex-direction:column; gap:10px; }
+.modalApp input, .modalApp select, .modalApp textarea {
+  width: 92%;
+  margin: 0 auto;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e6eaef;
+  outline:none;
+  font-size: 0.95rem;
+}
+.modalApp textarea { min-height:90px; resize:vertical; }
+
+/* confirm button */
+.modalApp .confirm-btn {
+  width: 92%;
+  margin: 6px auto 0;
+  padding: 12px;
+  border-radius: 12px;
+  border:none;
+  background: #09204d;
+  color: #fff;
+  font-weight:800;
+  cursor:pointer;
+  transition: filter .12s ease;
+}
+.modalApp .confirm-btn:hover { filter:brightness(1.12); }
+
+/* responsive */
+@media (max-width:720px) {
+  .content-grid { gap:10px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .doctor-avatar { width:48px; height:48px; font-size:0.95rem; }
+  .card-actions { flex-direction:column; align-items:stretch; }
+}
+
   

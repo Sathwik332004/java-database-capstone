@@ -72,350 +72,233 @@
 */
 
 // adminDashboard.js
-// ES module for Admin dashboard interactions (load, filter, add, delete doctors)
+// Path: app/src/main/resources/static/js/adminDashboard.js
 
-import { createDoctorCard } from '/js/components/doctorCard.js';
+import { openModal } from './components/modals.js';
+import { getDoctors, filterDoctors, saveDoctor } from './services/doctorServices.js';
+import { createDoctorCard } from './components/doctorCard.js';
 
-// Try to import service helpers if available; otherwise we'll use fallbacks
-let getDoctorsSvc = null;
-let filterDoctorsSvc = null;
-let saveDoctorSvc = null;
-let openModalFn = null;
-
-(async function tryImports() {
-  try {
-    const svc = await import('/js/services/doctorServices.js').catch(() => null);
-    if (svc) {
-      if (typeof svc.getDoctors === 'function') getDoctorsSvc = svc.getDoctors;
-      if (typeof svc.filterDoctors === 'function') filterDoctorsSvc = svc.filterDoctors;
-      if (typeof svc.saveDoctor === 'function') saveDoctorSvc = svc.saveDoctor;
-    }
-  } catch (e) {
-    console.warn('doctorServices import failed', e);
-  }
-
-  try {
-    const modal = await import('/js/components/modal.js').catch(() => null);
-    if (modal && typeof modal.openModal === 'function') openModalFn = modal.openModal;
-  } catch (e) {
-    // ignore
-  }
-
-  // fallback to globals if module imports not present
-  if (!openModalFn && typeof window.openModal === 'function') openModalFn = window.openModal;
-})();
-
-// Helper DOM selectors (deferred lookup inside DOMContentLoaded)
-const selectors = {
-  contentId: 'content',
-  searchId: 'searchBar',
-  specialtyId: 'specialtyFilter',
-  timeSortId: 'timeSort',
-  addBtnId: 'openAddDoctor',
-  submitAddBtnId: 'submitAddDoctor',
-  cancelAddBtnId: 'cancelAddDoctor',
-  modalId: 'modal',
-  modalBackdropId: 'modalBackdrop',
-  closeModalId: 'closeModal',
-  addFormId: 'addDoctorForm',
-  addFeedbackId: 'addDoctorFeedback',
-  emptyStateId: 'emptyState'
-};
-
-// Basic fallback API base
-const API_BASE = (window.BASE_API_URL && window.BASE_API_URL.replace(/\/+$/, '')) || '/api';
-const FALLBACK_DOCTORS_ENDPOINT = `${API_BASE}/admin/doctors`;
-
-// ------ Utility helpers ------
-const $ = (id) => document.getElementById(id);
-const safeText = (v) => (v === null || v === undefined) ? '' : String(v).trim();
-
+// utility: safe query, toast + debounce
+const $ = id => document.getElementById(id);
 function showAlert(msg) {
-  if (typeof window.showToast === 'function') window.showToast(msg);
-  else alert(msg);
+  if (typeof window.showToast === 'function') return window.showToast(msg);
+  return alert(msg);
+}
+function debounce(fn, wait = 200) {
+  let t = null;
+  return (...args) => { clearTimeout(t); t = setTimeout(()=>fn(...args), wait); };
 }
 
-function tokenOrAlert() {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    showAlert('Authentication required. Please log in as admin.');
-  }
-  return token;
-}
-
-// ------ Service fallbacks (if service functions not provided) ------
-async function fallbackGetDoctors() {
-  const token = localStorage.getItem('token');
-  const headers = token ? { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } : { 'Accept': 'application/json' };
-  const resp = await fetch(FALLBACK_DOCTORS_ENDPOINT, { method: 'GET', headers });
-  if (!resp.ok) throw new Error(`Failed to fetch doctors (${resp.status})`);
-  const data = await resp.json();
-  // Accept either array or { content: [...] } shape
-  return Array.isArray(data) ? data : (data.content || []);
-}
-
-async function fallbackFilterDoctors(name, time, specialty) {
-  // simple server-side filter attempt: build query params
-  const params = new URLSearchParams();
-  if (name) params.append('name', name);
-  if (time) params.append('time', time);
-  if (specialty) params.append('specialty', specialty);
-  const url = `${FALLBACK_DOCTORS_ENDPOINT}?${params.toString()}`;
-  const token = localStorage.getItem('token');
-  const headers = token ? { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } : { 'Accept': 'application/json' };
-  const resp = await fetch(url, { method: 'GET', headers });
-  if (!resp.ok) throw new Error(`Filter request failed (${resp.status})`);
-  const data = await resp.json();
-  return Array.isArray(data) ? data : (data.content || []);
-}
-
-async function fallbackSaveDoctor(doctorObj, token) {
-  if (!token) throw new Error('Missing token');
-  const resp = await fetch(FALLBACK_DOCTORS_ENDPOINT, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify(doctorObj)
-  });
-  if (!resp.ok) {
-    const txt = await resp.text().catch(()=>null);
-    throw new Error(`Save failed: ${resp.status} ${txt || ''}`);
-  }
-  return await resp.json();
-}
-
-// pick service methods with fallbacks
-const getDoctors = async () => (typeof getDoctorsSvc === 'function' ? getDoctorsSvc() : fallbackGetDoctors());
-const filterDoctors = async (name, time, specialty) => (typeof filterDoctorsSvc === 'function' ? filterDoctorsSvc(name, time, specialty) : fallbackFilterDoctors(name, time, specialty));
-const saveDoctor = async (doctorObj, token) => (typeof saveDoctorSvc === 'function' ? saveDoctorSvc(doctorObj, token) : fallbackSaveDoctor(doctorObj, token));
-
-// ------ DOM operation functions ------
+// IDs used in templates
+const IDS = {
+  content: 'content',
+  search: 'searchBar',
+  filterTime: 'filterTime',
+  filterSpecialty: 'filterSpecialty',
+  addDocBtn: 'addDocBtn',           // button that opens modal
+  addDoctorSubmit: 'submitAddDoctor', // button inside modal to create
+  // modal form input ids
+  docFullName: 'docFullName',
+  docEmail: 'docEmail',
+  docPhone: 'docPhone',
+  docSpecialty: 'docSpecialty',
+  docPassword: 'docPassword',
+  docExperience: 'docExperience',
+  docAvailableTimes: 'docAvailableTimes', // comma-separated
+  modalId: 'modal'
+};
 
 /**
  * renderDoctorCards
- * Clear content area and render list of doctor cards
+ * Clears content and renders an array of doctors using createDoctorCard.
  */
 function renderDoctorCards(doctors = []) {
-  const content = $(selectors.contentId);
+  const content = $(IDS.content);
   if (!content) return;
-  content.innerHTML = '';
 
-  if (!doctors || doctors.length === 0) {
+  content.innerHTML = '';
+  if (!Array.isArray(doctors) || doctors.length === 0) {
     const empty = document.createElement('div');
     empty.className = 'empty-state';
-    empty.textContent = 'No doctors found with the given filters.';
+    empty.textContent = 'No doctors found.';
     content.appendChild(empty);
     return;
   }
 
   doctors.forEach(doc => {
-    // create card element (use imported createDoctorCard if available)
-    let cardEl = null;
     try {
-      if (typeof createDoctorCard === 'function') {
-        cardEl = createDoctorCard(doc, {
-          onView: (d) => { window.location.href = `/admin/doctors/${d.id}`; },
-          onDelete: async (d) => { /* optional extra pre-delete logic */ },
-          onDeleted: (d) => { /* optional post-delete callback */ }
-        });
-      }
+      const card = createDoctorCard(doc);
+      content.appendChild(card);
     } catch (err) {
-      console.warn('createDoctorCard error', err);
-    }
-
-    // fallback simple card if creation failed
-    if (!cardEl) {
+      console.warn('createDoctorCard failed for', doc, err);
+      // fallback minimal card
       const fallback = document.createElement('div');
-      fallback.className = 'doctor-card sc-card';
-      fallback.innerHTML = `<div><strong>${safeText(doc.fullName||doc.name||'Unknown')}</strong><div>${safeText(doc.specialization||doc.specialty||'General')}</div></div>`;
-      cardEl = fallback;
+      fallback.className = 'doctor-card';
+      fallback.innerHTML = `<strong>${doc.fullName || doc.name || 'Unknown'}</strong><div>${doc.specialization || doc.specialty || ''}</div>`;
+      content.appendChild(fallback);
     }
-
-    content.appendChild(cardEl);
   });
 }
 
 /**
  * loadDoctorCards
- * Fetch all doctors and display them
+ * Fetches all doctors (getDoctors) and renders them.
  */
 export async function loadDoctorCards() {
-  const content = $(selectors.contentId);
-  if (!content) return;
-  content.innerHTML = '<div class="empty-state">Loading doctors…</div>';
+  const content = $(IDS.content);
+  if (content) content.innerHTML = '<div class="empty-state">Loading doctors…</div>';
 
   try {
     const doctors = await getDoctors();
     renderDoctorCards(doctors);
   } catch (err) {
     console.error('loadDoctorCards error', err);
-    content.innerHTML = `<div class="empty-state">Failed to load doctors: ${err.message || err}</div>`;
+    if (content) content.innerHTML = `<div class="empty-state">Failed to load doctors: ${err?.message || err}</div>`;
   }
 }
 
 /**
  * filterDoctorsOnChange
- * Read filters and request filtered list from service
+ * Read UI filters and call filterDoctors() service.
  */
 export async function filterDoctorsOnChange() {
-  const nameVal = safeText($(selectors.searchId) ? $(selectors.searchId).value : '');
-  const timeVal = safeText($(selectors.timeSortId) ? $(selectors.timeSortId).value : '');
-  const specialtyVal = safeText($(selectors.specialtyId) ? $(selectors.specialtyId).value : '');
-
-  // normalize empty strings to null
-  const name = nameVal === '' ? null : nameVal;
-  const time = timeVal === '' ? null : timeVal;
-  const specialty = specialtyVal === '' ? null : specialtyVal;
+  const name = ($(IDS.search) && $(IDS.search).value.trim()) || null;
+  const time = ($(IDS.filterTime) && $(IDS.filterTime).value) || null;
+  const specialty = ($(IDS.filterSpecialty) && $(IDS.filterSpecialty).value) || null;
 
   try {
-    const doctors = await filterDoctors(name, time, specialty);
-    if (!doctors || doctors.length === 0) {
-      const content = $(selectors.contentId);
-      if (content) {
-        content.innerHTML = '<div class="empty-state">No doctors found with the given filters.</div>';
-      }
-      return;
-    }
+    const result = await filterDoctors(name, time, specialty);
+    // service may return array or object { doctors: [] } — normalize
+    let doctors = [];
+    if (!result) doctors = [];
+    else if (Array.isArray(result)) doctors = result;
+    else if (Array.isArray(result.doctors)) doctors = result.doctors;
+    else if (Array.isArray(result.content)) doctors = result.content;
+    else doctors = [];
+
     renderDoctorCards(doctors);
   } catch (err) {
     console.error('filterDoctorsOnChange error', err);
-    showAlert(`Error filtering doctors: ${err.message || err}`);
+    showAlert('❌ Error filtering doctors. See console for details.');
   }
 }
 
 /**
  * adminAddDoctor
- * Collect form data from modal and add a new doctor
+ * Collects modal form input values, validates, and calls saveDoctor()
  */
 export async function adminAddDoctor() {
-  // elements from modal form
-  const fullNameEl = $('docFullName');
-  const emailEl = $('docEmail');
-  const phoneEl = $('docPhone');
-  const specialtyEl = $('docSpecialty');
-  const experienceEl = $('docExperience');
-  const timesEl = $('docAvailableTimes'); // optional additional input; fallback parse from docSpecialty if none
-
-  if (!fullNameEl || !emailEl || !phoneEl || !specialtyEl || !experienceEl) {
-    showAlert('Add Doctor form is not found / not properly configured.');
-    return;
-  }
-
-  const fullName = safeText(fullNameEl.value);
-  const email = safeText(emailEl.value);
-  const phone = safeText(phoneEl.value);
-  const specialty = safeText(specialtyEl.value);
-  const experienceYears = Number(safeText(experienceEl.value)) || 0;
-  let availableTimes = [];
-
-  if (timesEl && timesEl.value) {
-    // expecting comma-separated times like "09:00-10:00, 10:00-11:00"
-    availableTimes = timesEl.value.split(',').map(s => s.trim()).filter(Boolean);
-  }
-
-  // token check
-  const token = tokenOrAlert();
-  if (!token) return;
-
-  const doctorObj = {
-    fullName,
-    email,
-    phone,
-    specialization: specialty,
-    experienceYears,
-    availableTimes
-  };
-
   try {
-    // UI feedback element (if exists)
-    const feedback = $(selectors.addFeedbackId);
-    if (feedback) feedback.textContent = 'Saving doctor…';
+    const fullName = $(IDS.docFullName) ? $(IDS.docFullName).value.trim() : '';
+    const email = $(IDS.docEmail) ? $(IDS.docEmail).value.trim() : '';
+    const phone = $(IDS.docPhone) ? $(IDS.docPhone).value.trim() : '';
+    const specialty = $(IDS.docSpecialty) ? $(IDS.docSpecialty).value.trim() : '';
+    const password = $(IDS.docPassword) ? $(IDS.docPassword).value : '';
+    const experienceYears = $(IDS.docExperience) ? Number($(IDS.docExperience).value) || 0 : 0;
+    const availableTimesRaw = $(IDS.docAvailableTimes) ? $(IDS.docAvailableTimes).value : '';
+    const availableTimes = availableTimesRaw ? availableTimesRaw.split(',').map(s=>s.trim()).filter(Boolean) : [];
 
-    const created = await saveDoctor(doctorObj, token);
-    // success
-    if (feedback) feedback.textContent = 'Doctor created successfully.';
-    // close modal if modal helper exists
-    if (typeof openModalFn === 'function') {
-      // if modal module openModal toggles, we attempt to close by calling closeModal if exposed
-      if (typeof window.closeModal === 'function') window.closeModal();
-    } else {
-      // generic hide modal
-      const modal = $(selectors.modalId);
-      if (modal) modal.setAttribute('aria-hidden', 'true');
+    if (!fullName || !email || !phone || !specialty || !password) {
+      showAlert('Please fill required fields: name, email, phone, specialty and password.');
+      return;
     }
 
-    // reload doctors
-    await loadDoctorCards();
+    const token = localStorage.getItem('token');
+    if (!token) {
+      showAlert('Authentication required — please log in as admin.');
+      return;
+    }
 
+    const doctorObj = {
+      fullName,
+      email,
+      phone,
+      specialization: specialty,
+      password,
+      experienceYears,
+      availableTimes
+    };
+
+    // Optional UI feedback
+    const submitBtn = $(IDS.addDoctorSubmit);
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Saving...';
+    }
+
+    const res = await saveDoctor(doctorObj, token);
+    // saveDoctor returns { success, message } or response body depending on implementation
+    // accept multiple shapes
+    let ok = false, message = '';
+    if (res && typeof res === 'object') {
+      if (typeof res.success !== 'undefined') { ok = !!res.success; message = res.message || ''; }
+      else if (res.id || res._id || res.data) { ok = true; message = 'Doctor saved.'; }
+      else ok = true;
+    } else {
+      ok = true;
+    }
+
+    if (ok) {
+      showAlert('✅ Doctor added successfully.');
+      // close modal
+      if (typeof openModal === 'function') {
+        // if your modal exposes close function on window, call it; otherwise hide #modal
+        if (typeof window.closeModal === 'function') window.closeModal();
+        else {
+          const modal = $(IDS.modalId);
+          if (modal) modal.setAttribute('aria-hidden','true');
+        }
+      }
+      // reload list
+      await loadDoctorCards();
+    } else {
+      showAlert(`❌ Failed to add doctor. ${message || ''}`);
+    }
   } catch (err) {
     console.error('adminAddDoctor error', err);
-    const feedback = $(selectors.addFeedbackId);
-    if (feedback) feedback.textContent = `Failed to create doctor: ${err.message || err}`;
-    else showAlert(`Failed to create doctor: ${err.message || err}`);
+    showAlert(`❌ Error creating doctor: ${err?.message || err}`);
+  } finally {
+    const submitBtn = $(IDS.addDoctorSubmit);
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Save Doctor';
+    }
   }
 }
 
-// Attach event listeners when DOM ready
-document.addEventListener('DOMContentLoaded', () => {
-  // wire Add Doctor button to open modal via openModal('addDoctor')
-  const addBtn = $(selectors.addBtnId);
-  if (addBtn) {
-    addBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (typeof openModalFn === 'function') openModalFn('addDoctor');
-      else if (typeof window.openModal === 'function') window.openModal('addDoctor');
-      else {
-        // fallback: show local modal element
-        const modal = $(selectors.modalId);
-        if (modal) modal.setAttribute('aria-hidden', 'false');
-      }
-    });
-  }
+// Expose adminAddDoctor to global scope so modal's submit can call it if wired inline
+window.adminAddDoctor = adminAddDoctor;
 
-  // wire submit button inside modal (if exists)
-  const submitBtn = $(selectors.submitAddBtnId);
+// Attach DOM listeners
+document.addEventListener('DOMContentLoaded', () => {
+  // open add doctor modal
+  const addBtn = $(IDS.addDocBtn);
+  if (addBtn) addBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (typeof openModal === 'function') openModal('addDoctor');
+    else {
+      const modal = $(IDS.modalId);
+      if (modal) modal.setAttribute('aria-hidden','false');
+    }
+  });
+
+  // submit button inside modal (if exists)
+  const submitBtn = $(IDS.addDoctorSubmit);
   if (submitBtn) submitBtn.addEventListener('click', (e) => {
     e.preventDefault();
     adminAddDoctor();
   });
 
-  // wire cancel / close
-  const cancelBtn = $(selectors.cancelAddBtnId);
-  if (cancelBtn) cancelBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    const modal = $(selectors.modalId);
-    if (modal) modal.setAttribute('aria-hidden', 'true');
-  });
-  const closeBtn = $(selectors.closeModalId);
-  if (closeBtn) closeBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    const modal = $(selectors.modalId);
-    if (modal) modal.setAttribute('aria-hidden', 'true');
-  });
-  const backdrop = $(selectors.modalBackdropId);
-  if (backdrop) backdrop.addEventListener('click', () => {
-    const modal = $(selectors.modalId);
-    if (modal) modal.setAttribute('aria-hidden', 'true');
-  });
+  // search and filters
+  const searchEl = $(IDS.search);
+  if (searchEl) searchEl.addEventListener('input', debounce(filterDoctorsOnChange, 260));
+  const timeEl = $(IDS.filterTime);
+  if (timeEl) timeEl.addEventListener('change', filterDoctorsOnChange);
+  const specialtyEl = $(IDS.filterSpecialty);
+  if (specialtyEl) specialtyEl.addEventListener('change', filterDoctorsOnChange);
 
-  // initial load of doctors
+  // initial load
   loadDoctorCards();
-
-  // attach search & filter listeners
-  const searchEl = $(selectors.searchId);
-  const specialtyEl = $(selectors.specialtyId);
-  const timeSortEl = $(selectors.timeSortId);
-
-  if (searchEl) searchEl.addEventListener('input', debounce(() => filterDoctorsOnChange(), 220));
-  if (specialtyEl) specialtyEl.addEventListener('change', () => filterDoctorsOnChange());
-  if (timeSortEl) timeSortEl.addEventListener('change', () => filterDoctorsOnChange());
 });
 
-// debounce utility
-function debounce(fn, wait = 200) {
-  let t = null;
-  return (...args) => {
-    clearTimeout(t);
-    t = setTimeout(() => fn(...args), wait);
-  };
-}
 

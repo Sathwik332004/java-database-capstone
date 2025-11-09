@@ -53,11 +53,8 @@
     - Call loadAppointments() to display today's appointments by default
 */
 
-// src/main/resources/static/js/services/doctorDashboard.js
+// src/main/resources/static/js/doctorDashboard.js
 // Doctor dashboard appointment loader per spec.
-// - imports getAllAppointments (fallback if not present)
-// - imports createPatientRow to render rows
-// - wires search / today / date picker to reload list
 
 import { createPatientRow } from '/js/components/patientRows.js';
 
@@ -73,7 +70,7 @@ let getAllAppointmentsSvc = null;
   }
 })();
 
-// fallback HTTP call for appointments
+// Fallback HTTP call for appointments if a service isn't available
 async function fallbackGetAllAppointments(date, patientName, token) {
   const base = (window.BASE_API_URL && window.BASE_API_URL.replace(/\/+$/, '')) || '/api';
   const params = new URLSearchParams();
@@ -87,11 +84,10 @@ async function fallbackGetAllAppointments(date, patientName, token) {
   const resp = await fetch(url, { method: 'GET', headers });
   if (!resp.ok) throw new Error(`Failed to fetch appointments: ${resp.status}`);
   const data = await resp.json();
-  // Expect either an array or { content: [] } shape
   return Array.isArray(data) ? data : (data.content || []);
 }
 
-// choose service
+// choose service (prefers imported service)
 const getAllAppointments = async (date, patientName, token) => {
   if (typeof getAllAppointmentsSvc === 'function') {
     return getAllAppointmentsSvc(date, patientName, token);
@@ -118,16 +114,16 @@ function clearTableMessage(msg) {
 // state
 let selectedDate = formatTodayYYYYMMDD();
 let token = localStorage.getItem('token') || null;
-let patientName = null; // "null" when empty per backend expectation
+let patientName = null; // when empty string, we use null for backend
 
-// DOM elements (may be null until DOMContentLoaded)
+// DOM elements (set during attachListeners)
 let tbodyEl, searchEl, todayBtnEl, datePickerEl;
 
 function attachListeners() {
   tbodyEl = $('patientTableBody');
   searchEl = $('searchBar');
-  todayBtnEl = $('todayBtn');
-  datePickerEl = $('datePicker');
+  todayBtnEl = $('todayBtn');      // ensure your button has id="todayBtn"
+  datePickerEl = $('datePicker');  // ensure your date input has id="datePicker"
 
   // Search input (debounced)
   if (searchEl) {
@@ -175,7 +171,7 @@ export async function loadAppointments() {
   // show loading
   clearTableMessage('Loading appointments…');
 
-  // ensure token read freshly (in case login changed)
+  // refresh token (in case user logged in/out)
   token = localStorage.getItem('token') || null;
 
   try {
@@ -190,23 +186,27 @@ export async function loadAppointments() {
       return;
     }
 
-    // For each appointment, build a patient object and render a row using createPatientRow
+    // For each appointment, normalize appointment -> patient fields and create a row
     for (const appt of appointments) {
-      // normalize appointment -> patient fields (adjust to your backend shape)
       const patient = {
-        id: appt.patientId ?? appt.patient?.id ?? appt.patient_id ?? appt.patientId,
-        name: appt.patientName ?? appt.patient?.name ?? appt.patient?.fullName ?? appt.patient?.full_name,
-        phone: appt.patientPhone ?? appt.patient?.phone ?? appt.patient?.contact ?? appt.phone,
-        email: appt.patientEmail ?? appt.patient?.email ?? appt.patient?.contactEmail,
-        nextAppointment: appt.appointmentTime ?? appt.appointment_time ?? appt.time ?? appt.date
+        id: appt.patientId ?? appt.patient?.id ?? appt.patient_id ?? appt.patient_id,
+        name: appt.patientName ?? appt.patient?.name ?? appt.patient?.fullName ?? appt.patient?.full_name ?? 'Unknown',
+        phone: appt.patientPhone ?? appt.patient?.phone ?? appt.patient?.contact ?? appt.phone ?? '',
+        email: appt.patientEmail ?? appt.patient?.email ?? appt.patient?.contactEmail ?? '',
+        nextAppointment: appt.appointmentTime ?? appt.appointment_time ?? appt.time ?? appt.date ?? ''
       };
 
-      // create row
+      // create row using provided component; pass callbacks if needed
       const row = createPatientRow(patient, {
         onPrescribe: (p) => {
-          // open prescription modal or route to prescription page
-          if (typeof window.openModal === 'function') window.openModal('prescription', { patient: p, appointment: appt });
-          else window.location.href = `/doctor/patients/${encodeURIComponent(p.id)}/prescriptions/new?appointmentId=${encodeURIComponent(appt.id ?? '')}`;
+          // prefer modal if available on window
+          if (typeof window.openModal === 'function') {
+            window.openModal('prescription', { patient: p, appointment: appt });
+          } else {
+            // fallback navigate to prescription page
+            const apptId = encodeURIComponent(appt.id ?? appt._id ?? '');
+            window.location.href = `/doctor/patients/${encodeURIComponent(p.id)}/prescriptions/new?appointmentId=${apptId}`;
+          }
         }
       });
 
@@ -227,17 +227,14 @@ function tryRenderContent() {
 
 // initialize on DOM ready
 document.addEventListener('DOMContentLoaded', async () => {
-  // attach UI listeners and initialize elements
   attachListeners();
 
   // call renderContent if provided (per spec)
   tryRenderContent();
 
-  // load today's appointments by default
   // ensure date picker shows selectedDate
   const dp = $('datePicker');
   if (dp) dp.value = selectedDate;
 
   await loadAppointments();
 });
-

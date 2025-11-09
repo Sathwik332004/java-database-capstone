@@ -137,14 +137,19 @@ window.loginPatient = async function () {
 }
 */
 
-// patientDashboard.js (improved)
-// Keep imports as in your project
+// patientDashboard.js
+// Path: src/main/resources/static/js/patientDashboard.js
+
+// Imports (adjust paths if your project structure differs)
 import { getDoctors, filterDoctors } from './services/doctorServices.js';
+import { patientSignup, patientLogin } from './services/patientServices.js';
 import { openModal } from './components/modals.js';
 import { createDoctorCard } from './components/doctorCard.js';
-import { patientSignup, patientLogin } from './services/patientServices.js';
+import { selectRole } from './util.js'; // helper that stores role in localStorage
 
-// Debounce utility
+/* ----------------- Utilities ----------------- */
+const $ = (id) => document.getElementById(id);
+
 function debounce(fn, wait = 220) {
   let t = null;
   return (...args) => {
@@ -153,19 +158,12 @@ function debounce(fn, wait = 220) {
   };
 }
 
-// Safe helper to get element
-const $ = (id) => document.getElementById(id);
-
-// Centralized error logger + user alert
-function handleError(prefix, err, showAlert = true) {
+function logErr(prefix, err) {
   console.error(prefix, err);
-  if (showAlert) alert('❌ An error occurred. See console for details.');
 }
 
-/** loadDoctorCards
- *  Fetches all doctors via getDoctors() and renders them using createDoctorCard()
- */
-async function loadDoctorCards() {
+/* ----------------- Core: Load & Render Doctors ----------------- */
+export async function loadDoctorCards() {
   try {
     const doctors = await getDoctors();
     const contentDiv = $('content');
@@ -187,31 +185,32 @@ async function loadDoctorCards() {
       }
     });
   } catch (err) {
-    handleError('Failed to load doctors:', err);
+    logErr('Failed to load doctors:', err);
+    const contentDiv = $('content');
+    if (contentDiv) contentDiv.innerHTML = `<div class="empty-state">Failed to load doctors. Try again later.</div>`;
   }
 }
 
-/** filterDoctorsOnChange
- * Reads UI filter values and calls filterDoctors(name,time,specialty)
- * Then renders doctor cards or shows "No doctors found..."
- */
+/* ----------------- Filtering ----------------- */
 async function filterDoctorsOnChange() {
   try {
     const searchEl = $('searchBar');
     const filterTimeEl = $('filterTime');
     const filterSpecialtyEl = $('filterSpecialty');
+
     if (!searchEl || !filterTimeEl || !filterSpecialtyEl) return;
 
-    const searchBar = searchEl.value.trim();
-    const filterTime = filterTimeEl.value;
-    const filterSpecialty = filterSpecialtyEl.value;
+    const nameVal = searchEl.value.trim();
+    const timeVal = filterTimeEl.value;
+    const specialtyVal = filterSpecialtyEl.value;
 
-    const name = searchBar.length > 0 ? searchBar : null;
-    const time = filterTime.length > 0 ? filterTime : null;
-    const specialty = filterSpecialty.length > 0 ? filterSpecialty : null;
+    const name = nameVal.length > 0 ? nameVal : null;
+    const time = timeVal.length > 0 ? timeVal : null;
+    const specialty = specialtyVal.length > 0 ? specialtyVal : null;
 
     const response = await filterDoctors(name, time, specialty);
-    // your service may return { doctors: [...] } or an array; handle both
+
+    // Normalize response: may be array or { doctors: [] } or { content: [] }
     let doctors = [];
     if (response == null) doctors = [];
     else if (Array.isArray(response)) doctors = response;
@@ -234,16 +233,19 @@ async function filterDoctorsOnChange() {
       });
     } else {
       contentDiv.innerHTML = "<p class='empty-state'>No doctors found with the given filters.</p>";
-      console.log("No doctors match filters.");
     }
   } catch (error) {
-    handleError('Failed to filter doctors:', error);
+    logErr('Failed to filter doctors:', error);
     alert("❌ An error occurred while filtering doctors.");
   }
 }
 
-/** Signup & Login handlers (exposed to global window for inline form buttons) */
-window.signupPatient = async function signupPatientHandler() {
+/* ----------------- Signup & Login Handlers (global) ----------------- */
+/**
+ * signupPatient - exposed globally at window.signupPatient for modal submit
+ * Expects modal inputs with ids: name, email, password, phone, address
+ */
+window.signupPatient = async function signupPatient() {
   try {
     const nameEl = $('name');
     const emailEl = $('email');
@@ -263,33 +265,35 @@ window.signupPatient = async function signupPatientHandler() {
     const address = addressEl.value.trim();
 
     if (!name || !email || !password) {
-      alert('Please fill required fields name, email and password.');
+      alert('Please fill required fields: name, email and password.');
       return;
     }
 
     const data = { name, email, password, phone, address };
     const res = await patientSignup(data);
 
-    // expected shape: { success: true/false, message: '...' }
     if (res && res.success) {
       alert(res.message || 'Signup successful.');
-      // close modal if open
+      // close modal if present
       try {
         const modal = $('modal');
         if (modal) modal.style.display = 'none';
       } catch (e) {}
-      // optionally redirect to login or reload cards
       await loadDoctorCards();
     } else {
       alert(res && res.message ? res.message : 'Signup failed.');
     }
   } catch (error) {
-    handleError('Signup failed:', error);
+    logErr('Signup failed:', error);
     alert("❌ An error occurred while signing up.");
   }
 };
 
-window.loginPatient = async function loginPatientHandler() {
+/**
+ * loginPatient - exposed globally at window.loginPatient for modal submit
+ * Expects modal inputs with ids: email, password
+ */
+window.loginPatient = async function loginPatient() {
   try {
     const emailEl = $('email');
     const passwordEl = $('password');
@@ -307,21 +311,14 @@ window.loginPatient = async function loginPatientHandler() {
     }
 
     const payload = { email, password };
-    console.log("loginPatient :: ", payload);
-
     const response = await patientLogin(payload);
 
-    // If patientLogin returns a fetch Response object (as in your code),
-    // handle both cases: Response or a simple object { ok, status, json() }.
+    // Support both raw fetch Response and parsed return shapes
     if (response && typeof response.ok !== 'undefined') {
-      // fetch Response path
-      console.log("Status Code:", response.status, "Response OK:", response.ok);
       if (response.ok) {
         const result = await response.json();
-        console.log(result);
         if (result && result.token) {
           localStorage.setItem('token', result.token);
-          // mark role and proceed
           if (typeof selectRole === 'function') selectRole('loggedPatient');
           else localStorage.setItem('userRole', 'loggedPatient');
           window.location.href = '/pages/loggedPatientDashboard.html';
@@ -348,15 +345,14 @@ window.loginPatient = async function loginPatientHandler() {
       }
     }
   } catch (error) {
-    handleError('Login failed:', error);
+    logErr('Login failed:', error);
     alert("❌ Failed to Login. See console for details.");
   }
 };
 
-/* ---------- Attach UI listeners and init ---------- */
+/* ----------------- Initialization & Event Wiring ----------------- */
 document.addEventListener('DOMContentLoaded', () => {
-  // Single DOMContentLoaded entry point
-  // 1) attach signup/login modal buttons (if present)
+  // Wire signup button
   const signupBtn = $('patientSignup');
   if (signupBtn) {
     signupBtn.addEventListener('click', (ev) => {
@@ -370,6 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Wire login button
   const loginBtn = $('patientLogin');
   if (loginBtn) {
     loginBtn.addEventListener('click', (ev) => {
@@ -383,14 +380,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 2) load all doctors initially
+  // Load doctors initially
   loadDoctorCards();
 
-  // 3) attach filter listeners (with guards)
+  // Attach filter listeners with debounce
   const searchEl = $('searchBar');
-  if (searchEl) {
-    searchEl.addEventListener('input', debounce(filterDoctorsOnChange, 300));
-  }
+  if (searchEl) searchEl.addEventListener('input', debounce(filterDoctorsOnChange, 300));
   const timeEl = $('filterTime');
   if (timeEl) timeEl.addEventListener('change', filterDoctorsOnChange);
   const specialtyEl = $('filterSpecialty');

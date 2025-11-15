@@ -2,7 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
-application.properties
+/src/main/resources/application.properties
 
 # C extensions
 *.so

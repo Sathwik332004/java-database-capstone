@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+application.properties
 
 # C extensions
 *.so
@@ -98,6 +99,7 @@ __pypackages__/
 celerybeat-schedule
 celerybeat.pid
 
+
 # SageMath parsed files
 *.sage.py
 
@@ -109,7 +111,6 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-application.properties
 
 # Spyder project settings
 .spyderproject

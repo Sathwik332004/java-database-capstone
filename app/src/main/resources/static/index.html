@@ -1,65 +1,47 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Smart Clinic — Choose Role</title>
-  <link rel="icon" href="./assets/images/favicon.ico" />
+  <meta charset="UTF-8">
+  <title>Select Role</title>
+  <link rel="icon" href="../assets/images/logo/Logo.png" />
+  <link rel="stylesheet" href="../assets/css/index.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="./assets/css/index.css">
-  <link rel="stylesheet" href="./assets/css/style.css">
+  <!-- JS Utilities -->
+  <script src="../js/util.js" defer></script>
+  <script src="../js/render.js" defer></script>
 
-  <!-- small meta for mobile -->
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- JS Components -->
+  <script src="../js/components/header.js" defer></script>
+  <script src="../js/components/footer.js" defer></script>
 </head>
 <body>
-  <main>
-    <div class="container">
-      <div class="wrapper">
+  <div class="container">
+    <div class="wrapper">
+      <!-- Header Placeholder -->
+      <div id="header"></div>
 
-        <!-- header injected by js component -->
-        <div id="header"></div>
+      <!-- Main Role Selection -->
+      <main class="main-content">
+        <h2>Select Your Role</h2>
+        <button id="adminLogin" class="dashboard-btn">Admin</button>
+        <button onclick="selectRole('patient')" class="dashboard-btn" >Patient</button>
+        <button id="doctorLogin" class="dashboard-btn">Doctor</button>
+      </main>
 
-        <!-- main content -->
-        <section class="main-content">
-          <div class="hero-card">
-            <h2 class="hero-title">Select Your Role</h2>
-            <p class="hero-sub">Choose how you want to access the Smart Clinic system — Admin, Doctor or Patient.</p>
-
-            <div class="roles">
-              <button id="adminBtn" class="role-btn dashboard-btn" data-role="ADMIN">Admin</button>
-              <button id="doctorBtn" class="role-btn dashboard-btn" data-role="DOCTOR">Doctor</button>
-              <button id="patientBtn" class="role-btn dashboard-btn" data-role="PATIENT">Patient</button>
-            </div>
-
-            <p class="hint">Your role selection will be stored locally and used to tailor pages and login flows.</p>
-          </div>
-        </section>
-
-        <!-- footer injected by js component -->
-        <div id="footer"></div>
-
-      </div>
-    </div>
-  </main>
-
-  <!-- Hidden modal -->
-  <div id="modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="modalTitle">
-    <div class="modal-backdrop" id="modalBackdrop"></div>
-    <div class="modal-card" role="document">
-      <button id="closeModal" class="close" aria-label="Close modal">&times;</button>
-      <div id="modal-body" class="modal-body">
-        <!-- dynamic modal content injected here -->
-      </div>
+      <!-- Footer Placeholder -->
+      <div id="footer"></div>
     </div>
   </div>
 
-  <!-- JS utilities and components (deferred) -->
-  <script src="./js/util.js" defer></script>
-  <script src="./js/components/header.js" defer></script>
-  <script src="./js/components/footer.js" defer></script>
+  <!-- Modal for Login or Role-Specific Info -->
+  <div id="modal" class="modal" style="display: none;">
+    <span id="closeModal" class="close">&times;</span>
+    <div id="modal-body"></div>
+  </div>
 
-  <!-- core page module (ES module) -->
-  <script type="module" src="./js/services/index.js" defer></script>
+  <!-- Role Selection + Modal Script -->
+  <script type="module" src="../js/services/index.js" defer></script>
 </body>
 </html>

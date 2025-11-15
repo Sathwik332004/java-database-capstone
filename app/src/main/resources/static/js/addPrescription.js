@@ -1,3 +1,4 @@
+
 import { savePrescription, getPrescription } from "./services/prescriptionServices.js";
 
 document.addEventListener('DOMContentLoaded', async () => {

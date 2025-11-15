@@ -1,3 +1,4 @@
+
 // appointmentRow.js
 export function getAppointments(appointment) {
   const tr = document.createElement("tr");

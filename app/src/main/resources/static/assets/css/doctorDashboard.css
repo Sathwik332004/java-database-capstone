@@ -1,110 +1,64 @@
-/* This is the style sheet for the doctorDashboard.html */
-/* 
-**Table Header (`.table-header`)**
 
-* Set font size to `24px` for clear emphasis.
-* Use a dark teal color (`#015c5d`) for consistency with the theme.
-* Add `30px` bottom margin and remove right margin.
+/* doctorDashboard.css */
+.table-header {
+  font-size: 24px;
+  color: #015c5d;
 
-**Table Styling (`table`)**
-
-* Make the table full width (`100%`).
-* Collapse borders for clean lines.
-* Use a `sans-serif` font.
-* Add `20px` top margin for spacing.
-
-**Table Head (`thead`)**
-
-* Set a very light dark background (`#33333310`) for header row.
-* Use white text color (`#fff`).
-
-**Table Cells (`td, th`)**
-
-* Apply padding of `12px 16px` for spacing.
-* Center-align the text.
-* Add a subtle bottom border (`1px solid #ddd`).
-
-**Table Row Styling**
-
-* Alternate row colors for better readability:
-
-  * Even rows: semi-transparent light grey (`#f9f9f959`).
-  * Odd rows: soft white background (`#ffffffc0`).
-* On hover: highlight row with a light teal overlay (`#015c5d39`).
-
-**Prescription Button (`.prescription-btn`)**
-
-* Set size to `30px x 30px`.
-* Make it interactive with a pointer cursor.
-* Add transition effects for scale and brightness on hover.
-* On hover:
-
-  * Slightly enlarge (`scale(1.1)`)
-  * Brighten appearance
-* On click: slightly shrink (`scale(0.95)`).
-
-**No Record Message (`.noPatientRecord`)**
-
-* Use a `16px` italic grey font to indicate no data gently.
-
-**Today Button (`.today-btn`)**
-
-* Add right margin (`10px`).
-* Add padding (`10px`).
-* Set background color to teal green (`#015c5d`).
-
-**Date Picker (`.date-picker`)**
-
-* Add left margin (`10px`) and top margin (`13px`).
-* Round corners with `8px` radius.
-* Add padding (`10px`) and set fixed height (`30px`).
-
----
-
-Let me know if you'd like a consolidated style guide for the entire HospitalCRM frontend.
- */
-
- /* doctorDashboard.css - handcrafted styles for Doctor dashboard */
-
-/* Reset & base */
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { height: 100%; font-family: Inter, Arial, Helvetica, sans-serif; background: #f6f8fb; color: #0e1724; }
-
-/* container/wrapper share with admin styles (kept consistent) */
-.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-.wrapper { display:flex; flex-direction:column; min-height:100vh; gap:18px; }
-
-/* header area handled by layout */
-
-/* main card */
-.main-content { padding: 18px; border-radius: 12px; background: #fff; box-shadow: 0 10px 30px rgba(10,10,20,0.05); border: 1px solid #e9eef4; }
-
-/* controls */
-.controls { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-.search-input { padding:10px 12px; border-radius:10px; border:1px solid #e6eaef; width:280px; background:#fff; outline:none; }
-.search-input:focus { box-shadow:0 6px 18px rgba(3,110,110,0.06); border-color:#cfe0ff; }
-.select-filter, .btn { padding:10px 12px; border-radius:10px; border:1px solid #e6eaef; background:#fff; cursor:pointer; font-weight:700; }
-.btn.primary { background: linear-gradient(180deg,#0b5fff,#0b7fff); color:#fff; border:none; }
-#todayBtn { background:#015c5d; color:#fff; border:none; padding:10px 12px; border-radius:10px; }
-#todayBtn:hover { background:#017d7e; }
-
-/* table */
-.table-wrap { overflow:auto; }
-.sc-table { width:100%; border-collapse:collapse; background:transparent; min-width:800px; }
-.sc-table thead th { background: rgba(4,18,38,0.03); color:#081232; text-align:left; padding:12px; font-weight:700; font-size:0.95rem; border-bottom:1px solid #f0f3f6; }
-.sc-table tbody td { padding:12px; border-bottom:1px solid #f5f7fa; color:#3b4650; vertical-align:middle; }
-.sc-table tbody tr:hover { background:#fbfdff; transform:translateZ(0); }
-
-/* no records */
-.noPatientRecord td { font-style:italic; color:#7a8086; text-align:center; padding:24px; }
-
-/* prescription button */
-.prescription-btn { padding:8px 10px; border-radius:8px; border:1px solid #dfe8ff; background:#fff; color:#0b5fff; font-weight:700; cursor:pointer; transition: transform .12s ease, filter .12s ease; }
-.prescription-btn:hover { transform:scale(1.03); filter:brightness(1.03); }
-
-/* responsive */
-@media (max-width:900px) {
-  .search-input { width:100%; }
-  .controls { flex-direction:column; align-items:stretch; }
-  .sc-table { min-width:unset; font-size:0.95rem; }
+  margin-bottom: 30px;
+  margin-right: 0px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: sans-serif;
+  margin-top: 20px;
+}
+thead {
+  background-color: #33333310;
+  color: #fff;
+}
+td,
+th {
+  padding: 12px 16px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+tbody tr:nth-child(even) {
+  background-color: #f9f9f959;
+}
+tbody tr:nth-child(odd) {
+  background-color: #ffffffc0;
+}
+tbody tr:hover {
+  background-color: #015c5d39;
+}
+.prescription-btn {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+.prescription-btn:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+.prescription-btn:active {
+  transform: scale(0.95);
+}
+.noPatientRecord {
+  font-size: 16px;
+  color: gray;
+  font-style: italic;
+}
+.today-btn {
+  margin-right: 10px;
+  padding: 10px;
+  background-color: #015c5d;
+}
+.date-picker {
+  margin-left: 10px;
+  border-radius: 8px;
+  padding: 10px;
+  height: 30px;
+  margin-top: 13px;
 }

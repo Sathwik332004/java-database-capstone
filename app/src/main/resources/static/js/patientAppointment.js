@@ -102,4 +102,3 @@ async function handleFilterChange() {
     alert("❌ An error occurred while filtering appointments.");
   }
 }
-

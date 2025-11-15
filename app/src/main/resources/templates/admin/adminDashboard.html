@@ -1,227 +1,66 @@
 <!-- adminDashboard.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
 
-<!-- 
-Step-by-Step Explanation of `adminDashboard.html`
-This file creates the Admin Dashboard interface for managing doctor-related data 
-with search, filter, and modal functionality.
-
-
-1. Declare the Document Type
-
-   * Use `<!DOCTYPE html>` to ensure HTML5 standards for consistent rendering across browsers.
-
-2. Begin the HTML Document with Thymeleaf Namespace
-
-   * Add the `<html>` tag with `xmlns:th="http://www.thymeleaf.org"` to allow Thymeleaf-specific attributes in Spring-based apps.
-
-3. Head Section – Metadata and Resources
-
-   * Open the `<head>` section for meta info and links to assets and scripts.
-
-4. Set Character Encoding
-
-   * Use UTF-8 to support all characters and prevent encoding issues.
-
-5. Set the Favicon
-
-   * Add a favicon for browser tabs using Thymeleaf pathing: 
-     `<link rel="icon" type="image/png" th:href="@{/assets/images/logo/logo.png}" />`.
-
-6. Set the Page Title
-
-   * Give the page a title, e.g., `"Admin Dashboard"`, which will show in the browser tab.
-
-7. Link CSS Stylesheets
-
-   * Include dashboard-specific styles and global site-wide styles:
-     - `adminDashboard.css` for layout and design of this page.
-     - `style.css` for shared UI components.
-
-8. Link JavaScript Files (with `defer`)
-
-   * Use Thymeleaf's `th:src` to include JS components and utilities:
-     - `render.js` (rendering content)
-     - `util.js` (utility functions)
-     - `header.js` and `footer.js` (for dynamic header/footer)
-   * Use `defer` so scripts execute after the HTML is fully parsed.
-
-9. Close the Head and Begin the Body
-
-    * Start the visible part of the webpage. `onload="renderContent()"` is used to call a function when the page is ready.
-
-10. Create the Container
-
-    * Add a `div` with class `container` for layout control.
-
-11. Add a Wrapper Inside the Container
-
-    * Wrap page elements with a `wrapper` div to maintain consistent spacing and organization.
-
-12. Insert a Header Placeholder
-
-    * Add `<div id="header"></div>` for injecting the header via JavaScript.
-
-13. Define the Main Section
-
-    * Use `<main class="main-content">` for the central dashboard area.
-
-14. Add a Search Bar
-
-    * Add an input field with `id="searchBar"` for admin to search content dynamically.
-
-15. Add Filter Dropdowns
-
-    * Use two `<select>` elements:
-      - One for time (AM/PM).
-      - One for filtering by medical specialty (Cardiologist, Dentist, etc.).
-
-16. Add Content Display Area
-
-    * Insert a `<div id="content"></div>` for dynamic injection of doctor cards or data.
-
-17. Add a Footer Placeholder
-
-    * Use `<div id="footer"></div>` for a JavaScript-rendered footer.
-
-18. Add Modal Structure
-
-    * Include a modal with:
-      - A close button (`&times;`)
-      - A content area (`#modal-body`) for displaying popup information or forms.
-
-19. Include Page-Specific JavaScript Modules
-
-    * Load JavaScript specific to the admin dashboard:
-      - `adminDashboard.js` for dashboard logic.
-      - `doctorCard.js` for rendering doctor information cards.
-    * Use `type="module"` and `defer` for modern and non-blocking loading.
-
-    HINT:
-        `<script type="module" src="../../static/js/adminDashboard.js" defer></script>`
-        `<script type="module" src="../../static/js/doctorDashboard.js" defer></script>`
-        
-        
-20. Close the Body and HTML Tags
-
-    * Finish the structure by properly closing all tags.
-
- -->
-
- <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Admin Dashboard — Smart Clinic</title>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" th:href="@{/assets/images/logo/logo.png}" />
+    <title>Admin Dashboard</title>
 
-  <!-- page-specific + global CSS -->
-  <link rel="stylesheet" th:href="@{/assets/css/adminDashboard.css}">
-  <link rel="stylesheet" th:href="@{/assets/css/style.css}">
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" th:href="@{/assets/css/adminDashboard.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+
+    <script th:src="@{/js/render.js}" defer></script>
+    <script th:src="@{/js/util.js}" defer></script>
+    <script th:src="@{/js/components/header.js}" defer></script>
+    <script th:src="@{/js/components/footer.js}" defer></script>
 </head>
-<body>
 
-  <div class="container">
-    <div class="wrapper">
-
-      <!-- header injected by header.js -->
-      <div id="header"></div>
-
-      <!-- MAIN CONTENT -->
-      <main class="main-content">
-
-        <section class="panel sc-card admin-panel">
-
-          <!-- controls -->
-          <div class="panel-header">
-            <h1 class="page-title">Doctors Management</h1>
-
-            <div class="controls">
-              <input id="searchBar" type="text" placeholder="Search by doctor name" class="search-input" />
-
-              <select id="specialtyFilter" class="select-filter">
-                <option value="">All Specialties</option>
-              </select>
-
-              <select id="timeSort" class="select-filter">
-                <option value="upcoming">Sort: Upcoming</option>
-                <option value="recent">Sort: Recently Added</option>
-              </select>
-
-              <!-- Add Doctor button — header.js also creates an Add Doctor button, but keep a local control -->
-              <button id="openAddDoctor" class="btn primary">Add Doctor</button>
-            </div>
-          </div>
-
-          <!-- dynamic list area -->
-          <div id="content" class="content-grid" aria-live="polite">
-            <!-- doctor cards are injected here by adminDashboard.js -->
-            <div class="empty-state" id="emptyState">Loading doctors…</div>
-          </div>
-
-        </section>
-      </main>
-
-      <!-- footer injected by footer.js -->
-      <div id="footer"></div>
-
+<body onload="renderContent()">
+    <div class="container">
+        <div class="wrapper">
+            <div id="header"></div>
+            <main class="main-content">
+                <input type="text" id="searchBar" class="searchBar" placeholder="search by doctor name" />
+                <div class="filter-wrapper">
+                    <select class="filter-select" id="filterTime">
+                        <option value="">Sort by time</option>
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
+                    <select class="filter-select" id="filterSpecialty">
+                        <option value="">Specialty</option>
+                        <option value="Cardiologist">Cardiologist</option>
+                        <option value="Dermatologist">Dermatologist</option>
+                        <option value="Neurologist">Neurologist</option>
+                        <option value="Pediatrician">Pediatrician</option>
+                        <option value="Orthopedic">Orthopedic</option>
+                        <option value="Gynecologist">Gynecologist</option>
+                        <option value="Psychiatrist">Psychiatrist</option>
+                        <option value="Dentist">Dentist</option>
+                        <option value="Ophthalmologist">Ophthalmologist</option>
+                        <option value="Ent">ENT Specialist</option>
+                        <option value="Urologist">Urologist</option>
+                        <option value="Oncologist">Oncologist</option>
+                        <option value="Gastroenterologist">Gastroenterologist</option>
+                        <option value="General">General Physician</option>
+                    </select>
+                </div>
+                <div id="content"></div>
+            </main>
+            <div id="footer"></div>
+        </div>
     </div>
-  </div>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <div id="modal-body" style="height:500px; overflow-y:auto;"></div>
 
-  <!-- ADD DOCTOR MODAL (hidden by default) -->
-  <div id="modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="modalTitle">
-    <div class="modal-backdrop" id="modalBackdrop"></div>
-    <div class="modal-card" role="document">
-      <button id="closeModal" class="close" aria-label="Close modal">&times;</button>
-
-      <div class="modal-body">
-        <h3 id="modalTitle">Add New Doctor</h3>
-
-        <form id="addDoctorForm" class="sc-form" onsubmit="return false;">
-          <div class="sc-field">
-            <label class="sc-label" for="docFullName">Full name</label>
-            <input id="docFullName" class="sc-input" name="fullName" required minlength="3" maxlength="100" />
-          </div>
-
-          <div class="sc-field">
-            <label class="sc-label" for="docEmail">Email</label>
-            <input id="docEmail" class="sc-input" name="email" type="email" required />
-          </div>
-
-          <div class="sc-field">
-            <label class="sc-label" for="docPhone">Phone</label>
-            <input id="docPhone" class="sc-input" name="phone" pattern="\\d{10}" placeholder="10 digits" required />
-          </div>
-
-          <div class="sc-field">
-            <label class="sc-label" for="docSpecialty">Specialty</label>
-            <input id="docSpecialty" class="sc-input" name="specialty" required minlength="3" maxlength="50" />
-          </div>
-
-          <div class="sc-field">
-            <label class="sc-label" for="docExperience">Experience (years)</label>
-            <input id="docExperience" class="sc-input" name="experienceYears" type="number" min="0" value="0" />
-          </div>
-
-          <div class="sc-actions modal-actions">
-            <button type="button" id="submitAddDoctor" class="sc-btn">Add Doctor</button>
-            <button type="button" id="cancelAddDoctor" class="sc-btn secondary">Cancel</button>
-          </div>
-
-          <div id="addDoctorFeedback" class="sc-help" aria-live="polite"></div>
-        </form>
-      </div>
+        </div>
     </div>
-  </div>
-
-  <!-- scripts (deferred) -->
-  <script th:src="@{/js/util.js}" defer></script>
-  <script th:src="@{/js/components/header.js}" defer></script>
-  <script th:src="@{/js/components/footer.js}" defer></script>
-
-  <!-- modules (ES modules) -->
-  <script type="module" th:src="@{/js/components/doctorCard.js}" defer></script>
-  <script type="module" th:src="@{/js/services/adminDashboard.js}" defer></script>
+    <script type="module" src="../js/adminDashboard.js" defer></script>
+    <script type="module" src="../js/components/doctorCard.js" defer></script>
 </body>
+
+
 </html>
-
-

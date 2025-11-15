@@ -1,91 +1,200 @@
-/* This is the stylesheet for the addPrescription.html */
+/* Polished/Classy stylesheet for addPrescription.html
+   - Themeable via CSS variables
+   - Optional dark mode: add class "theme-dark" to <body>
+   - Improved typography, spacing, focus states, and buttons
+*/
 
-.form-container {
-    width: 100%; 
-    max-width: 600px;
-    background: #ffffffc8;
-    margin: 50px auto;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    animation: fadeIn 0.5s ease-in-out;
-  }
+/* ---------- Theme variables ---------- */
+:root{
+  --bg: #f4f6f8;
+  --surface: rgba(255,255,255,0.95);
+  --muted: #6b7280;
+  --text: #0f1724;
+  --accent: #0f766e;         /* teal */
+  --accent-2: #0ea5a4;       /* lighter teal */
+  --danger: #A62B1F;         /* you used this red */
+  --input-border: rgba(15,23,42,0.06);
+  --card-radius: 14px;
+  --elevation: 0 8px 20px rgba(15,23,42,0.06);
+  --glass: rgba(255,255,255,0.6);
+  --font-sans: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --transition: 220ms cubic-bezier(.2,.9,.3,1);
+  --max-width: 680px;
+  --padding: 28px;
+}
 
-  .container h2 {
-    text-align: center;
-    color: #222;
-    font-size: 28px;
-    margin-bottom: 25px;
-  }
+/* Dark theme override */
+body.theme-dark{
+  --bg: #071028;
+  --surface: linear-gradient(180deg, rgba(12,17,26,0.9), rgba(8,12,20,0.85));
+  --muted: #93a5b5;
+  --text: #e6eef6;
+  --input-border: rgba(255,255,255,0.06);
+  --glass: rgba(255,255,255,0.03);
+  --elevation: 0 10px 30px rgba(0,0,0,0.6);
+}
 
-  .container h2 span {
-    color: #A62B1F;
-  }
+/* ---------- Page base ---------- */
+* { box-sizing: border-box; }
+html,body { height: 100%; margin: 0; font-family: var(--font-sans); background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+.container { max-width: var(--max-width); margin: 48px auto; padding: 0 16px; }
 
-  label {
-    display: block;
-    margin-bottom: 6px;
-    font-weight: 500;
-    color: #333;
-    text-align: left;
-    font-size: 13px;
-  }
+/* ---------- Form card ---------- */
+.form-container{
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 28px auto;
+  padding: var(--padding);
+  background: var(--surface);
+  border-radius: var(--card-radius);
+  box-shadow: var(--elevation);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(0,0,0,0.04);
+  animation: fadeInUp 360ms var(--transition) both;
+}
 
-  input, textarea {
-    width: 100%;
-    padding: 12px;
-    resize: vertical;
-    margin-bottom: 20px;
-    border: 1px solid #cccccc6e;
-    border-radius: 8px;
-    font-size: 15px;
-    outline: none;
-    transition: 0.3s;
-    font-family: "Verdana";
-  }
+/* heading */
+.container h2{
+  text-align: center;
+  color: var(--text);
+  font-size: 1.4rem;
+  margin: 0 0 18px 0;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.container h2 span{ color: var(--danger); }
 
-  input:focus, textarea:focus {
-    border-color: #015c5d;
-    box-shadow: 0 0 4px #a7f3d0;
-    filter: brightness(1.5);
-  }
+/* labels & help */
+label{
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: var(--muted);
+  text-align: left;
+  font-size: 0. ninerem;
+  line-height: 1.2;
+}
 
-  #patientName{
-    background-color: #bdbcbc80;
-  }
-  .btn-primary {
-    background-color: #047857;
-    color: #fff;
-    padding: 14px;
-    width: 100%;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.3s;
-  }
+/* inputs & textarea */
+input, textarea, select {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  border-radius: 10px;
+  border: 1px solid var(--input-border);
+  background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.4));
+  color: var(--text);
+  font-size: 0.95rem;
+  outline: none;
+  transition: box-shadow var(--transition), border-color var(--transition), transform var(--transition);
+  font-family: var(--font-sans);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+body.theme-dark input,
+body.theme-dark textarea,
+body.theme-dark select {
+  background: rgba(255,255,255,0.02);
+}
 
-  .btn-primary:hover {
-    background-color: #065f46;
-  }
+/* focus */
+input:focus, textarea:focus, select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 6px 20px rgba(14,165,132,0.08);
+  transform: translateY(-1px);
+}
 
-  .btn-secondary {
-    background-color: transparent;
-    color: #333;
-    border: 1px solid #ccc;
-    padding: 12px;
-    width: 100%;
-    border-radius: 8px;
-    font-size: 15px;
-    margin-top: 12px;
-    cursor: pointer;
-  }
+/* placeholder color */
+::placeholder { color: #9aa6b2; opacity: 1; }
 
-  .btn-secondary:hover{
-    color: #fff;
-  }
+/* patientName specific style (read-only-style) */
+#patientName {
+  background-color: rgba(189,188,188,0.5);
+  cursor: not-allowed;
+  color: var(--text);
+}
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(30px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+/* buttons - full width primary + secondary */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: 12px 14px;
+  width: 100%;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.98rem;
+  cursor: pointer;
+  border: 0;
+  transition: transform var(--transition), box-shadow var(--transition), opacity var(--transition);
+  box-shadow: 0 8px 20px rgba(2,6,23,0.04);
+}
+
+/* primary gradient button */
+.btn-primary {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: #fff;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(14,165,132,0.14); }
+.btn-primary:active { transform: translateY(0); }
+
+/* secondary - subtle outline */
+.btn-secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid rgba(0,0,0,0.08);
+}
+.btn-secondary:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: transparent;
+}
+
+/* small variant */
+.btn-sm { padding: 8px 10px; font-size: .9rem; width: auto; }
+
+/* disabled state */
+.btn[disabled], input[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ---------- Utilities & layout ---------- */
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.col { flex: 1 1 0; min-width: 160px; }
+.full { flex: 1 1 100%; }
+
+/* small text */
+.field-help { font-size: 0.85rem; color: var(--muted); margin-top: -12px; margin-bottom: 10px; }
+.field-error { color: var(--danger); font-size: 0.85rem; margin-top: -10px; }
+
+/* animation */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* responsive adjustments */
+@media (max-width: 680px) {
+  .form-container { padding: 18px; margin: 18px 12px; border-radius: 12px; }
+  .container h2 { font-size: 1.2rem; }
+  label { font-size: 0. ninerem; }
+}
+
+/* tiny accessibility: focus ring */
+:focus { outline: none; }
+:focus-visible { outline: 3px solid rgba(14,165,132,0.12); outline-offset: 3px; border-radius: 8px; }
+
+/* subtle footer actions area */
+.form-actions { display: flex; gap: 12px; margin-top: 6px; }
+.form-actions .btn { flex: 1 1 0; }
+
+/* preserve your original hover behavior if needed */
+.btn-primary:focus, .btn-secondary:focus { box-shadow: 0 10px 26px rgba(14,165,132,0.08); }
+
+/* small tweak if you keep .container h2 span as red highlight */
+.container h2 span { font-weight: 700; }
+
+/* End of stylesheet */

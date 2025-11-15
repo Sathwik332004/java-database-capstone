@@ -1,151 +1,61 @@
-/*this is the style sheet for the adminDashboard. */
 
-/* 
-Global Reset (`*`)
-
-* Purpose: Ensure consistent layout across all browsers.
-* Properties:
-
-  * `margin: 0` — removes default outer spacing from all elements.
-  * `padding: 0` — removes default inner spacing.
-  * `box-sizing: border-box` — ensures padding and borders are included within the total width/height of elements.
-
-Base HTML & Body (`html, body`)
-
-* Purpose: Establish a full-height layout and apply a standard font across the page.
-* Properties:
-
-  * `height: 100%` — allows containers to stretch to the full viewport height.
-  * `font-family: Arial, sans-serif` — applies a clean, readable sans-serif font.
-
-Main Layout Wrapper (`.wrapper`)
-
-* Purpose: Create a flexible, vertical layout that fills the entire screen.
-* Properties:
-
-  * `display: flex` — enables flexbox for layout control.
-  * `flex-direction: column` — stacks children vertically.
-  * `min-height: 100vh` — ensures the wrapper always covers full screen height.
-
-Section Heading (`h2`)
-
-* Purpose: Style the headings prominently for section separation.
-* Properties:
-
-  * `font-size: 32px` — makes the heading large and noticeable.
-  * `font-weight: bold` — emphasizes text.
-  * `margin-bottom: 50px` — creates space below the heading.
-  * `color: #003e3e` — uses a strong teal for visual anchoring.
-
-Main Content Section (`.main-content`)
-
-* Purpose: Layout the main content with padding and a background image.
-* Properties:
-
-  * `flex-grow: 1` — lets the content fill the available vertical space.
-  * `padding: 40px` — adds internal spacing around content.
-  * `display: flex` and `flex-direction: column` — organizes content in a vertical stack.
-  * `text-align: center` — centers the text.
-  * `background-image: url("index.png")` — sets a full-screen dashboard background.
-  * `background-size: cover` — ensures the image covers the whole section.
-  * `background-position: center` — centers the image.
-  * `background-repeat: no-repeat` — avoids tiling the image.
-  * `background-attachment: fixed` — fixes the image while scrolling.
-
-Primary Button (`button`)
-
-* Purpose: Design prominent, interactive buttons for main actions.
-
-* Properties:
-
-  * `background-color: #A62B1F` — sets a bold red color.
-  * `color: white` — makes text stand out.
-  * `border: none` — removes any outline/border.
-  * `border-radius: 12px` — creates rounded corners.
-  * `padding: 10px 20px` — gives space inside the button.
-  * `margin-top: 20px` — adds spacing above the button.
-  * `width: 200px` — ensures consistent button width.
-  * `cursor: pointer` — shows a hand icon on hover.
-  * `font-size: 16px` — makes the text readable.
-
-* On Hover:
-
-  * Retains the same red background to maintain branding.
-
-Admin Button (`.adminBtn`)
-
-* Purpose: Provide a secondary button style for admin-specific actions.
-
-* Properties:
-
-  * `background-color: #f4f4f4` — uses a light grey background.
-  * `color: #333` — uses dark text for contrast.
-  * `font-weight: bold` — emphasizes text.
-  * `width: 110px` — smaller, compact width.
-  * `padding: 10px 0` — vertical padding only.
-  * `border: none` — clean look.
-  * `cursor: pointer` — indicates it's clickable.
-
-* On Hover**:
-
-   Changes text color to `#A62B1F` for brand consistency while keeping the background same.
-
-
-*/
-
-/* adminDashboard.css - handcrafted styles (no frameworks) */
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { height: 100%; font-family: Inter, Arial, Helvetica, sans-serif; background: #f6f8fb; color: #0e1724; }
-
-.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-.wrapper { display: flex; flex-direction: column; min-height: 100vh; gap: 18px; }
-
-/* card/panel */
-.sc-card { background: #fff; border-radius: 12px; padding: 18px; border: 1px solid #e7ebf0; box-shadow: 0 8px 22px rgba(7,10,20,0.06); }
-.admin-panel { width: 100%; }
-
-/* header */
-.panel-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
-.page-title { font-size:1.25rem; font-weight:700; color:#071232; }
-
-/* controls */
-.controls { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-.search-input { padding:10px 12px; border-radius:10px; border:1px solid #e6eaef; width:240px; background:#fff; outline:none; }
-.search-input:focus { box-shadow:0 6px 18px rgba(11,95,255,0.08); border-color:#cfe0ff; }
-
-.select-filter { padding:10px 12px; border-radius:10px; border:1px solid #e6eaef; background:#fff; outline:none; min-width:160px; }
-.btn { padding:10px 14px; border-radius:10px; border:none; cursor:pointer; font-weight:700; }
-.btn.primary { background: linear-gradient(180deg,#0b5fff,#0b7fff); color:#fff; }
-
-/* content grid */
-.content-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:14px; margin-top:6px; }
-.empty-state { padding:28px; color:#5b6570; text-align:center; }
-
-/* doctor card base (doctorCard.js will add sc-card class) */
-.doctor-card { display:flex; flex-direction:column; gap:8px; padding:14px; border-radius:10px; border:1px solid #eef2f8; background:#fff; min-height:140px; }
-.doctor-top { display:flex; gap:12px; align-items:center; }
-.doctor-avatar { width:56px; height:56px; border-radius:8px; background:#eef7ff; display:flex; align-items:center; justify-content:center; font-weight:700; color:#08327b; font-size:1.05rem; }
-.doctor-info { flex:1; }
-.doctor-name { font-weight:700; color:#081232; }
-.doctor-meta { color:#6b7178; font-size:0.95rem; margin-top:4px; }
-.doctor-actions { display:flex; gap:8px; margin-top:auto; }
-.action-btn { padding:8px 10px; border-radius:8px; border:1px solid #dbe7ff; background:#fff; cursor:pointer; font-weight:700; color:#0b5fff; }
-.action-btn.danger { border-color:#ffd6d6; color:#c02121; }
-
-/* modal styles reuse from global but add small tweaks */
-.modal { position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:220; }
-.modal[aria-hidden="false"] { display:flex; }
-.modal-backdrop { position:absolute; inset:0; background:rgba(10,12,20,0.45); }
-.modal-card { position:relative; width:95%; max-width:560px; border-radius:12px; padding:18px; background:#fff; z-index:230; box-shadow:0 18px 36px rgba(8,10,20,0.18); border:1px solid #e6ecf6; }
-.close { position:absolute; right:12px; top:10px; background:transparent; border:none; font-size:22px; color:#6b7178; cursor:pointer; }
-
-.modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
-.sc-help { margin-top:8px; color:#6b6f76 }
-
-/* responsive */
-@media (max-width: 760px) {
-  .controls { flex-direction:column; align-items:stretch; }
-  .search-input, .select-filter { width:100%; }
-  .content-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
-}
+/* adminDashboard CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }  
+  html, body {
+    height: 100%;
+    font-family: Arial, sans-serif;
+  
+  }  
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }  
+  h2 {
+    font-size: 32px;
+    margin-bottom: 50px;
+    color : #003e3e;
+  }  
+  .main-content {
+    flex-grow: 1; 
+    padding: 40px;
+    display: flex;
+    
+    flex-direction: column;
+    text-align: center;
+    background-image: url("../images/defineRole/defineRole.png");
+    background-size: cover;       
+    background-position: center;  
+    background-repeat: no-repeat; 
+    background-attachment: fixed;
+    
+  }  
+  button {
+    background-color: #A62B1F;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 20px;
+    margin-top: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 200px;
+  }  
+  button:hover {
+    background-color: #A62B1F; 
+  }
+  .adminBtn {    
+    color: #333;
+    font-weight: bold;
+    background-color: #f4f4f4;
+    width:110px;
+    padding : 10px 0px;
+  }
+  .adminBtn:hover{
+    color: #A62B1F;
+    background-color: #f4f4f4;
+  }

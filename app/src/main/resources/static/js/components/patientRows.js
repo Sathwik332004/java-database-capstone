@@ -1,3 +1,4 @@
+
 // patientRows.js
 export function createPatientRow(patient, appointmentId, doctorId) {
   const tr = document.createElement("tr");

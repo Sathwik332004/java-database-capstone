@@ -1,3 +1,4 @@
+
 /* This is the style sheet for global change across the files. */
 
 /* style.css */
@@ -204,7 +205,7 @@
 
 
   .dashboard-btn{
-    width: 100%;
+    width: 30%;
   }
 
   .input-field {
@@ -379,12 +380,3 @@
   margin-right: 0.5rem;
   accent-color: #015c5db8; 
 }
-
-/* style.css - optional page overrides / utilities */
-
-.text-center { text-align: center; }
-.mb-8 { margin-bottom: 8px; }
-.mt-12 { margin-top: 12px; }
-.hidden { display: none !important; }
-
-
